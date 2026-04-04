@@ -1,5 +1,9 @@
+package scan
+
+type TokenType int
+
 const (
-  LeftParen = iota
+  LeftParen TokenType = iota
   RightParen
   LeftBrace
   RightBrace
@@ -43,4 +47,8 @@ const (
 	Class
 	Super
 	This
+
+	Eof
+	NewLine
+	Unknown
 )
