@@ -23,8 +23,8 @@ const (
 	BangEqual
 	Less
 	LessEqual
-	Right 
-	RightEqual
+	Greater
+	GreaterEqual
 
 	Identifier
 	String

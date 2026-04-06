@@ -4,18 +4,20 @@ import "strconv"
 
 type Token struct {
 	toktype TokenType
-	literal string
+	lexeme string
+	literal any
 	line int
 }
 
-func NewToken(t TokenType, lit string, line int) *Token {
+func NewToken(t TokenType, lex string, lit any, line int) *Token {
 	return &Token{
 		toktype: t,
-		literal: lit,	
+		literal: lit,
+		lexeme: lex,
 		line: line,
 	}
 }
 
 func (t *Token) String() string {
-	return strconv.Itoa(int(t.toktype)) + " " + t.literal + " " + strconv.Itoa(t.line); 
+	return strconv.Itoa(int(t.toktype)) + " " + t.lexeme + " " + strconv.Itoa(t.line); 
 }
