@@ -19,5 +19,6 @@ func NewToken(t TokenType, lex string, lit any, line int) *Token {
 }
 
 func (t *Token) String() string {
-	return strconv.Itoa(int(t.toktype)) + " " + t.lexeme + " " + strconv.Itoa(t.line); 
+	name, _ := tokenTypeNames[t.toktype]
+	return name + " " + t.lexeme + " " + strconv.Itoa(t.line)
 }

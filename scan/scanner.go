@@ -1,5 +1,7 @@
 package scan
 
+import "strconv"
+
 type Scanner struct {
 	src []byte
 	tokenList []Token
@@ -99,13 +101,79 @@ func (s *Scanner) scanToken() {
 			s.addToken(GreaterEqual, nil)
 		} else {
 			s.addToken(Greater, nil)
-		} 
+		}
+	case '"':
+		s.handleString()
 	// IGNORE WHITESPACE
 	case ' ', '\t', '\r': break
 	case '\n':
 		s.line++
-	default: s.addToken(Unknown, nil)
+	default:
+		if s.isDigit(c) {
+			s.handleNumber()
+		} else if s.isAlpha(c) {
+			s.handleIdentifier()
+		} else {
+			panic("A")
+		}
 	}
+}
+
+func (s *Scanner) handleString() {
+	for s.peek() != '"' && !s.isAtEnd() {
+		if s.peek() == '\n' {
+			s.line++
+		}
+		s.advance()
+	}
+
+	if s.isAtEnd() {
+		panic("Untermined string")
+	}
+
+	s.advance() // close "
+
+	value := s.src[s.start+1:s.curr-1]
+	s.addToken(String, value)
+}
+
+func (s *Scanner) isAlpha(c byte) bool {
+	return (c >= 'a' && c <= 'z') ||
+				 (c >= 'A' && c <= 'Z') ||
+				 c == '_'
+}
+
+func (s *Scanner) isDigit(c byte) bool {
+	return c >= '0' && c <= '9'
+}
+
+func (s *Scanner) isAlphaNumeric(c byte) bool {
+	return s.isAlpha(c) || s.isDigit(c)
+}
+
+func (s *Scanner) handleNumber() {
+	for s.isDigit(s.peek()) {
+		s.advance()
+	}
+
+	if (s.peek() == '.' && s.isDigit(s.peekNext())) {
+		s.advance()
+
+		for (s.isDigit(s.peek())) {
+			s.advance()
+		}
+	}
+
+	value, _ := strconv.ParseFloat(string(s.src[s.start:s.curr]), 64)
+	s.addToken(Number, value)
+}
+
+func (s *Scanner) handleIdentifier() {
+	for s.isAlphaNumeric(s.peek()) {
+		s.advance()
+	}
+
+	s.addToken(Identifier, nil)
 }
 
 func (s *Scanner) addToken(t TokenType, l any) {
